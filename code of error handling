@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract HealthcareContract {
+    address public owner;
+    mapping(uint => string) public medicalHistories;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function patientsadd(uint _id, string memory _medicalHistory) public {
+        require(msg.sender == owner, "Only the owner can add or update patients");
+        require(bytes(_medicalHistory).length > 0, "Medical history cannot be empty");
+        
+        medicalHistories[_id] = _medicalHistory;
+        assert(bytes(medicalHistories[_id]).length > 0);
+    }
+
+    function retrievemediaclhistroy(uint _id) public view returns (string memory) {
+        require(bytes(medicalHistories[_id]).length > 0, "Patient does not have medical history");
+        return medicalHistories[_id];
+    }
+
+    function removePatient(uint _id) public {
+        require(msg.sender == owner, "Only the owner can remove patients");
+        require(bytes(medicalHistories[_id]).length > 0, "Patient does not exist");
+
+        delete medicalHistories[_id];
+        assert(bytes(medicalHistories[_id]).length == 0);
+
+        if (bytes(medicalHistories[_id]).length != 0) {
+            revert("Failed to remove the patient");
+        }
+    }
+}
